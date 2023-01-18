@@ -2,7 +2,6 @@
 from dataclasses import dataclass
 from typing import List
 import voluptuous as vol
-from .util import ChicagoData
 
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_NAME, Platform
@@ -11,17 +10,16 @@ from homeassistant.helpers import config_validation as cv, device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
 
-from .const import DOMAIN
+from .const import CONF_YEAR, DOMAIN
+from .util import get_data, ChicagoData
 
 PLATFORMS = [
-    Platform.SENSOR,
     Platform.SELECT,
 ]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    data = ChicagoData(["test1", "test2", "test3"], "test1")
-
+    data: ChicagoData = get_data(entry.data.get(CONF_YEAR))
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = data
 

@@ -3,7 +3,8 @@
     "step": {
       "user": {
         "data": {
-          "name": "[%key:common::config_flow::data::name%]"
+          "name": "[%key:common::config_flow::data::name%]",
+          "year": "Year"
         }
       }
     }

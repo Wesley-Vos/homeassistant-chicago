@@ -12,6 +12,7 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv
 
 from .const import (
+    CONF_YEAR,
     DOMAIN,
 )
 
@@ -19,7 +20,9 @@ from .const import (
 CONFIG_SCHEMA = vol.Schema(
     {
         vol.Optional(CONF_NAME, default="Chicago"): str,
-        vol.Required(CONF_HOST): str,
+        vol.Required(CONF_YEAR): vol.In(
+            ["2012-2013", "2013-2014", "2014-2015", "2015-2016", "2016-2017"]
+        ),
     }
 )
 
