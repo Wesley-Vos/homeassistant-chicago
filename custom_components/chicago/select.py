@@ -7,6 +7,7 @@ from homeassistant.components.select import SelectEntity
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.const import CONF_NAME
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -25,21 +26,21 @@ async def async_setup_entry(
     """Set up the Chicago select platform."""
     data = hass.data[DOMAIN][entry.entry_id]
 
-    entities: list[SelectEntity] = [ChicagoSelect(data, hass)]
+    entities: list[SelectEntity] = [ChicagoSelect(entry, data, hass)]
 
     if entities:
         async_add_entities(entities, True)
 
 
 class ChicagoSelect(SelectEntity, RestoreEntity):
-    def __init__(self, data: ChicagoData, hass):
+    def __init__(self, entry: ConfigEntry, data: ChicagoData, hass):
         self._hass = hass
         super().__init__()
 
         self.data = data
 
-        self._attr_name = f"Chicago episode select"
-        self._attr_unique_id = f"select_{DOMAIN}_chicago_serie"
+        self._attr_name = f"{entry.data.get(CONF_NAME)} episode"
+        self._attr_unique_id = f"select_{DOMAIN}_{entry.data.get(CONF_NAME)}"
 
     async def async_added_to_hass(self) -> None:
         """Run when entity about to be added."""

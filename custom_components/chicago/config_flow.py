@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 import voluptuous as vol
@@ -15,14 +16,13 @@ from .const import (
     CONF_YEAR,
     DOMAIN,
 )
+from .util import get_years
 
 # Validation of the user's configuration
 CONFIG_SCHEMA = vol.Schema(
     {
         vol.Optional(CONF_NAME, default="Chicago"): str,
-        vol.Required(CONF_YEAR): vol.In(
-            ["2012-2013", "2013-2014", "2014-2015", "2015-2016", "2016-2017"]
-        ),
+        vol.Required(CONF_YEAR): vol.In(get_years()),
     }
 )
 

@@ -34,7 +34,7 @@ class Episode:
 
     @property
     def label(self):
-        return f"{ self.serie } | S{ self.season } E { self.episode }"
+        return f"{ self.serie } | S{ self.season } E{ self.episode }"
 
 
 class PDEpisode(Episode):
@@ -91,6 +91,13 @@ class LawAndOrderEpisode(Episode):
     @property
     def name(self):
         return self._name
+
+
+def get_years():
+    script_dir = os.path.dirname(__file__)
+    return sorted(
+        [file.split(".csv")[0] for file in os.listdir(f"{script_dir}/episode_lists")]
+    )
 
 
 def get_data(year):
