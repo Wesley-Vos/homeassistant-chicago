@@ -1,0 +1,8 @@
+next_episode:
+  name: Next episode
+  description: Select the next episode
+  target:
+previous_episode:
+  name: Previous episode
+  description: Select the previous episode
+  target:

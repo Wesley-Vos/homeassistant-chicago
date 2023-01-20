@@ -1,16 +1,20 @@
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import Any, Optional, List
 
 import csv
 import os
 
 
 class Episode:
+    episode_id: int
     serie: str
     season: int
     episode: int
 
-    def __init__(self, serie: str, name: str, season: int, episode: int):
+    def __init__(
+        self, episode_id: int, serie: str, name: str, season: int, episode: int
+    ):
+        self.episode_id = episode_id
         self.serie = serie
         self._name = name
         self.season = season
@@ -38,8 +42,8 @@ class Episode:
 
 
 class PDEpisode(Episode):
-    def __init__(self, season: int, episode: int):
-        super().__init__("PD", "Police", season, episode)
+    def __init__(self, episode_id: int, season: int, episode: int):
+        super().__init__(episode_id, "PD", "Police", season, episode)
 
     @property
     def icon_color(self):
@@ -51,8 +55,8 @@ class PDEpisode(Episode):
 
 
 class MedEpisode(Episode):
-    def __init__(self, season: int, episode: int):
-        super().__init__("Med", "Medical", season, episode)
+    def __init__(self, episode_id: int, season: int, episode: int):
+        super().__init__(episode_id, "Med", "Medical", season, episode)
 
     @property
     def icon_color(self):
@@ -64,8 +68,8 @@ class MedEpisode(Episode):
 
 
 class FireEpisode(Episode):
-    def __init__(self, season: int, episode: int):
-        super().__init__("Fire", "Fire", season, episode)
+    def __init__(self, episode_id: int, season: int, episode: int):
+        super().__init__(episode_id, "Fire", "Fire", season, episode)
 
     @property
     def icon_color(self):
@@ -77,8 +81,8 @@ class FireEpisode(Episode):
 
 
 class LawAndOrderEpisode(Episode):
-    def __init__(self, season: int, episode: int):
-        super().__init__("LawAndOrder", "Law and Order", season, episode)
+    def __init__(self, episode_id: int, season: int, episode: int):
+        super().__init__(episode_id, "LawAndOrder", "Law and Order", season, episode)
 
     @property
     def icon_color(self):
@@ -105,42 +109,70 @@ def get_data(year):
     with open(f"{script_dir}/episode_lists/{year}.csv", "r") as f:
         data = list(csv.reader(f, delimiter=","))
 
-    options = []
+    episodes = []
     for row in data:
-        type = row[1]
+        episode_id = int(row[0])
+        episode_type = row[1]
         season_episode = row[2].split("x")
         season = int(season_episode[0])
         episode_number = int(season_episode[1])
 
-        if type == "Fire":
-            episode = FireEpisode(season=season, episode=episode_number)
-        elif type == "Med":
-            episode = MedEpisode(season=season, episode=episode_number)
-        elif type == "PD":
-            episode = PDEpisode(season=season, episode=episode_number)
-        elif type == "Law & Order: SVU":
-            episode = LawAndOrderEpisode(season=season, episode=episode_number)
+        if episode_type == "Fire":
+            episode = FireEpisode(
+                episode_id=episode_id, season=season, episode=episode_number
+            )
+        elif episode_type == "Med":
+            episode = MedEpisode(
+                episode_id=episode_id, season=season, episode=episode_number
+            )
+        elif episode_type == "PD":
+            episode = PDEpisode(
+                episode_id=episode_id, season=season, episode=episode_number
+            )
+        elif episode_type == "Law & Order: SVU":
+            episode = LawAndOrderEpisode(
+                episode_id=episode_id, season=season, episode=episode_number
+            )
 
-        options.append(episode)
+        episodes.append(episode)
 
-    data = ChicagoData(options)
+    data = ChicagoData(episodes)
     return data
 
 
 class ChicagoData:
-    all_options: list[str]
-    selected_option: str
-    selected_option_obj: Episode
+    all_episodes: Any
+    _all_episodes_keys: Any
+    selected_episode: str
+    selected_episode_idx: int
+    selected_episode_obj: Episode
 
     def __init__(self, options):
-        self.all_options = {option.label: option for option in options}
-        self.selected_option_obj = options[0]
-        self.selected_option = self.selected_option_obj.label
+        self.all_episodes = {option.label: option for option in options}
+        self._all_episodes_keys = [option.label for option in options]
+        self.set_episode(options[0].label)
 
     @property
-    def options_list(self):
-        return list(self.all_options.keys())
+    def episodes_lists(self):
+        return list(self.all_episodes.keys())
 
-    def set_option(self, option):
-        self.selected_option_obj = self.all_options[option]
-        self.selected_option = option
+    def set_episode(self, episode):
+        self.selected_episode_obj = self.all_episodes[episode]
+        self.selected_episode_idx = self._all_episodes_keys.index(episode)
+        self.selected_episode = episode
+
+    def next_episode(self):
+        if self.selected_episode_idx + 1 >= len(self._all_episodes_keys):
+            return
+
+        self.selected_episode_idx += 1
+        self.selected_episode = self._all_episodes_keys[self.selected_episode_idx]
+        self.selected_episode_obj = self.all_episodes[self.selected_episode]
+
+    def previous_episode(self):
+        if self.selected_episode_idx - 1 < 0:
+            return
+
+        self.selected_episode_idx -= 1
+        self.selected_episode = self._all_episodes_keys[self.selected_episode_idx]
+        self.selected_episode_obj = self.all_episodes[self.selected_episode]

@@ -1,6 +1,7 @@
 # pyright: ignore
 """Support for Tado selects for each zone."""
 import logging
+from typing import Any
 
 
 from homeassistant.components.select import SelectEntity
@@ -9,10 +10,15 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.const import CONF_NAME
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import (
+    AddEntitiesCallback,
+    async_get_current_platform,
+)
 from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import (
+    CHICAGO_PREVIOUS_EPISODE,
+    CHICAGO_NEXT_EPISODE,
     DOMAIN,
 )
 from .util import ChicagoData
@@ -25,6 +31,20 @@ async def async_setup_entry(
 ) -> None:
     """Set up the Chicago select platform."""
     data = hass.data[DOMAIN][entry.entry_id]
+
+    platform = async_get_current_platform()
+
+    platform.async_register_entity_service(
+        CHICAGO_PREVIOUS_EPISODE,
+        None,
+        "previous_episode",
+    )
+
+    platform.async_register_entity_service(
+        CHICAGO_NEXT_EPISODE,
+        None,
+        "next_episode",
+    )
 
     entities: list[SelectEntity] = [ChicagoSelect(entry, data, hass)]
 
@@ -48,31 +68,38 @@ class ChicagoSelect(SelectEntity, RestoreEntity):
 
         state = await self.async_get_last_state()
         if state and state.state in self.options:
-            self.data.set_option(state.state)
+            self.data.set_episode(state.state)
+
+    async def next_episode(self):
+        self.data.next_episode()
+
+    async def previous_episode(self):
+        self.data.previous_episode()
 
     @property
     def options(self) -> list[str]:
         """Return the available options."""
-        return self.data.options_list
+        return self.data.episodes_lists
 
     @property
     def current_option(self) -> str:
         """Return current options."""
-        return self.data.selected_option
+        return self.data.selected_episode
 
     @property
     def extra_state_attributes(self):
         return {
-            "subtitle": self.data.selected_option_obj.season_and_episode,
-            "title": self.data.selected_option_obj.name,
-            "icon_color": self.data.selected_option_obj.icon_color,
+            "subtitle": self.data.selected_episode_obj.season_and_episode,
+            "title": self.data.selected_episode_obj.name,
+            "icon_color": self.data.selected_episode_obj.icon_color,
+            "id": self.data.selected_episode_obj.episode_id,
         }
 
     @property
     def icon(self):
-        return self.data.selected_option_obj.icon
+        return self.data.selected_episode_obj.icon
 
     async def async_select_option(self, option: str) -> None:
-        """Select new (option)."""
-        self.data.set_option(option)
+        """Select new episode."""
+        self.data.set_episode(option)
         self.async_write_ha_state()
