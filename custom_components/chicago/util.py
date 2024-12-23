@@ -3,6 +3,7 @@ from typing import Any, Optional, List
 
 import csv
 import os
+import aiofiles
 
 
 class Episode:
@@ -97,17 +98,17 @@ class LawAndOrderEpisode(Episode):
         return self._name
 
 
-def get_years():
+def get_seasons():
     script_dir = os.path.dirname(__file__)
     return sorted(
         [file.split(".csv")[0] for file in os.listdir(f"{script_dir}/episode_lists")]
     )
 
 
-def get_data(year):
+async def get_data(year):
     script_dir = os.path.dirname(__file__)
-    with open(f"{script_dir}/episode_lists/{year}.csv", "r") as f:
-        data = list(csv.reader(f, delimiter=","))
+    async with aiofiles.open(f"{script_dir}/episode_lists/{year}.csv", "r") as f:
+        data = list(csv.reader(await f.read(), delimiter=","))
 
     episodes = []
     for row in data:
