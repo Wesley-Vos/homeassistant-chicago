@@ -1,6 +1,6 @@
 # Chicago Serie
 
-Simple HomeAssistant integration providing a select entity per year of the Chicago Serie coming from this amazing resource (https://petitcartonvert.tumblr.com/post/158289265736/chicago-franchise-episodes-timeline).
+Simple HomeAssistant integration providing a select entity per season of the Chicago Serie coming from this amazing resource (https://petitcartonvert.tumblr.com/post/158289265736/chicago-franchise-episodes-timeline).
 
 ## Installation
 There are two options, either add this repository as repository to HACS and search for "Chicago" or clone/ download this repo and copy the custom_components/chicago folder. Restart your Home Assistant afterwards.

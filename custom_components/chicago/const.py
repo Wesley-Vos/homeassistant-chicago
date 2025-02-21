@@ -1,7 +1,7 @@
-"""Constants for the Toon integration."""
+"""Constants for the Chicago integration."""
 CHICAGO_NEXT_EPISODE = "next_episode"
 CHICAGO_PREVIOUS_EPISODE = "previous_episode"
 
-CONF_YEAR = "Year"
+CONF_SEASON = "Season"
 
 DOMAIN = "chicago"

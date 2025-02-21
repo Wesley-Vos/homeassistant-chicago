@@ -97,16 +97,16 @@ class LawAndOrderEpisode(Episode):
         return self._name
 
 
-def get_years():
+def get_seasons():
     script_dir = os.path.dirname(__file__)
     return sorted(
         [file.split(".csv")[0] for file in os.listdir(f"{script_dir}/episode_lists")]
     )
 
 
-def get_data(year):
+def get_data(season):
     script_dir = os.path.dirname(__file__)
-    with open(f"{script_dir}/episode_lists/{year}.csv", "r") as f:
+    with open(f"{script_dir}/episode_lists/{season}.csv", "r") as f:
         data = list(csv.reader(f, delimiter=","))
 
     episodes = []

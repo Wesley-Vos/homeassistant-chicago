@@ -1,4 +1,4 @@
-"""Config flow to configure the Toon component."""
+"""Config flow to configure the Chicago component."""
 from __future__ import annotations
 
 from typing import Any
@@ -11,16 +11,16 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv
 
 from .const import (
-    CONF_YEAR,
+    CONF_SEASON,
     DOMAIN,
 )
-from .util import get_years
+from .util import get_seasons
 
 # Validation of the user's configuration
 CONFIG_SCHEMA = vol.Schema(
     {
         vol.Optional(CONF_NAME, default="Chicago"): str,
-        vol.Required(CONF_YEAR): vol.In(get_years()),
+        vol.Required(CONF_SEASON): vol.In(get_seasons()),
     }
 )
 
