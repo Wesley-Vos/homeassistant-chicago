@@ -4,7 +4,7 @@
       "user": {
         "data": {
           "name": "[%key:common::config_flow::data::name%]",
-          "year": "Year"
+          "season": "Season"
         }
       }
     }
