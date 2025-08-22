@@ -24,6 +24,12 @@ CONFIG_SCHEMA = vol.Schema(
     }
 )
 
+RECONFIGURE_CONFIG_SCHEMA = vol.Schema(
+    {
+        vol.Optional(CONF_NAME, default="Chicago"): str,
+        vol.Required(CONF_SEASON): vol.In(get_seasons()),
+    }
+)
 
 class ChicagoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a Chicago config flow."""
@@ -53,5 +59,5 @@ class ChicagoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
   
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=CONFIG_SCHEMA
+            data_schema=self.add_suggested_values_to_schema(CONFIG_SCHEMA, reconfigure_entry.data)
         )
