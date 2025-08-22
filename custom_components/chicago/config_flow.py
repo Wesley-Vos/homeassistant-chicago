@@ -9,6 +9,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.selector import TextSelector, TextSelectorConfig
 
 from .const import (
     CONF_SEASON,
@@ -19,14 +20,14 @@ from .util import get_seasons
 # Validation of the user's configuration
 CONFIG_SCHEMA = vol.Schema(
     {
-        vol.Optional(CONF_NAME, default="Chicago"): str,
+        vol.Optional(CONF_NAME, default="Chicago"): TextSelector(TextSelectorConfig()),
         vol.Required(CONF_SEASON): vol.In(get_seasons()),
     }
 )
 
 RECONFIGURE_CONFIG_SCHEMA = vol.Schema(
     {
-        vol.Optional(CONF_NAME, default="Chicago"): str,
+        vol.Optional(CONF_NAME, default="Chicago"): TextSelector(TextSelectorConfig(read_only=True)),
         vol.Required(CONF_SEASON): vol.In(get_seasons()),
     }
 )
@@ -59,5 +60,5 @@ class ChicagoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
   
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=self.add_suggested_values_to_schema(CONFIG_SCHEMA, reconfigure_entry.data)
+            data_schema=self.add_suggested_values_to_schema(RECONFIGURE_CONFIG_SCHEMA, reconfigure_entry.data)
         )
